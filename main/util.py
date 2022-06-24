@@ -1,4 +1,6 @@
 from datetime import datetime
+import ncit_module as nm
+import cellosaurus_module as cm
 spliter = "\t"
 
 
@@ -24,54 +26,19 @@ def append_to_str_list(item_list, item):
     return list
 
 
-def make_first_line():
-    column_list = [
-        "SPECIES",
-        "IDENTIFIER NAME",
-        "SYNONYMS",
-        "ACCESSION NAME",
-        "CATEGORY",
-        "DISEASE",
-        "CREATED DATE",
-        "LAST_UPDATED DATE",
-        "ENTRY VERSION"
-    ]
-    first_list_str = "\t".join(column_list)
-    first_list_str.join("\n")
-    # print(first_list_str)
-    return first_list_str
-
-
-
-def make_file_name(path, root):
+def make_output_file_name(path, type):
     ## get datetime
     now = datetime.now()
     dt = now.strftime('%Y%m%d%H%M%S')
 
-    ##  make file name using header tag
-    # get terminology name
-    term_name = root.findtext(".//header/terminology-name")
-    # make release list
-    header_list = []
-    # get release information
-    release = root.findall(".//header/release")
-    rel_attrib = release[0].attrib
-    version = rel_attrib.get("version")
-    updated = rel_attrib.get("updated")
+    if type == 'csr':
+        csr_output_filename = cm.cellosaurus_make_file_name(path, dt)
+        return csr_output_filename
 
-    # make str
-    header_list.append(path)
-    header_list.append(term_name)
-    header_list.append("_")
-    header_list.append("ver ")
-    header_list.append(version)
-    header_list.append("(")
-    header_list.append(updated)
-    header_list.append(")_")
-    header_list.append(dt)
-    header_list.append(".tsv")
-    rel_str = ''.join(header_list)
-    return rel_str
+    elif type == 'ncit':
+        ncit_output_filename = nm.ncit_make_file_name(path, dt)
+        return ncit_output_filename
+
 
 
 def get_cell_lines_info(cell_line):
